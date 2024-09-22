@@ -11,11 +11,6 @@ const SearchDropdown = () => {
   const [loading, setLoading] = useState(false); // New loading state
   const dropdownRef = useRef(null);
 
-  const defaultCity = {
-    lat: 40.7127,
-    lon: -74.006,
-  };
-
   const dispatch = useDispatch();
 
   const fetchWeatherData = async (lat, lon) => {
@@ -55,7 +50,7 @@ const SearchDropdown = () => {
         setSearchResults([]);
         setDropdownOpen(false);
       }
-    }, 2000);
+    }, 1000);
   };
 
   const fetchCities = async (query) => {
@@ -90,9 +85,8 @@ const SearchDropdown = () => {
   };
 
   useEffect(() => {
-    const { lat, lon } = defaultCity;
-    fetchWeatherData(lat, lon);
-  }, []);
+    fetchWeatherData(40.7127, -74.006);
+  }, [fetchWeatherData]);
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setDropdownOpen(false);

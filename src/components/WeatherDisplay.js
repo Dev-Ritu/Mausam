@@ -88,7 +88,7 @@ const WeatherDisplay = () => {
               >
                 {formatTemperature(currentForecast?.temperature)}°
               </p>
-              <p className={`text-lg md:text-2xl md:ml-4 ${textColor}`}>
+              <p className={`text-lg md:text-2xl md:ml-4 font-bold ${textColor}`}>
                 Humidity: {currentForecast.humidity}%
               </p>
             </div>
@@ -98,7 +98,7 @@ const WeatherDisplay = () => {
               >
                 {capitalizeWords(currentForecast.condition)}
               </p>
-              <p className={`text-lg md:text-2xl md:ml-4 ${textColor}`}>
+              <p className={`text-lg md:text-2xl md:ml-4 font-bold ${textColor}`}>
                 Wind Speed: {currentForecast.windSpeed} m/s
               </p>
             </div>
