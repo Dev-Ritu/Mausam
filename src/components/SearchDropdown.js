@@ -62,7 +62,7 @@ const SearchDropdown = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=672f17559ff881ac8cee6c874242de28`
+        `https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=672f17559ff881ac8cee6c874242de28`
       );
       if (!response.ok) throw new Error("Network response was not ok");
 
