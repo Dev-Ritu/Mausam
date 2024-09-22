@@ -92,7 +92,7 @@ const SearchDropdown = () => {
   useEffect(() => {
     const { lat, lon } = defaultCity;
     fetchWeatherData(lat, lon);
-  }, []);
+  }, [defaultCity,fetchWeatherData]);
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {

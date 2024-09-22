@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import clearSky from "../assets/clearSky.jpg";
 import raining from "../assets/rainy.jpg";
 import cloudy from "../assets/cloudy.jpg";
-import capitalizeWords from "../utils/capitalizeWords";
 import Night from "../assets/night.jpg";
 const FiveDayForecast = () => {
   const { data } = useSelector((state) => state.weather);
