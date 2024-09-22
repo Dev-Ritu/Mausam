@@ -29,7 +29,7 @@ const Navbar = () => {
           onClick={handleToggle}
         >
           <div
-            className={` hover:bg-gray-500 p-1 md:p-2 text-lg rounded-l-full w-[50%] ${
+            className={` hover:bg-gray-200 p-1 md:p-2 text-lg rounded-l-full w-[50%] ${
               unit === "Celsius"
                 ? "bg-gray-500 text-white"
                 : "bg-white text-gray-500"
@@ -38,7 +38,7 @@ const Navbar = () => {
             °C
           </div>
           <div
-            className={` hover:bg-gray-500 p-1 md:p-2 text-lg rounded-r-full w-[50%] ${
+            className={` hover:bg-gray-200 p-1 md:p-2 text-lg rounded-r-full w-[50%] ${
               unit !== "Celsius"
                 ? "bg-gray-500 text-white"
                 : "bg-white text-gray-500"

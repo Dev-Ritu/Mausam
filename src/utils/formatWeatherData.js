@@ -1,4 +1,3 @@
-// Import the sun.gif if you're using a bundler like Webpack or Next.js
 import sunGif from "../assets/sun.png";
 import moon from "../assets/moon.png";
 
@@ -8,14 +7,11 @@ export const formatWeatherData = (data) => {
     city: data.city.name,
     forecasts: data.list.map((entry) => {
       console.log("Temperature in Kelvin:", entry.main.temp);
-
-      // Check if the icon is '01d' and replace it with the local sun.gif
       let icon = "";
       if (entry.weather[0].icon === "01d") icon = sunGif;
       else if (entry.weather[0].icon === "01n") icon = moon;
       else
-        icon = `http://openweathermap.org/img/wn/${entry.weather[0].icon}@2x.png`; // Default OpenWeatherMap Icon
-
+        icon = `http://openweathermap.org/img/wn/${entry.weather[0].icon}@2x.png`; 
       return {
         dateTime: entry.dt_txt,
         temperature: entry.main.temp,
@@ -31,3 +27,5 @@ export const formatWeatherData = (data) => {
 
   return formattedData;
 };
+
+export default formatWeatherData

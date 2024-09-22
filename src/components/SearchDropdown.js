@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { setWeatherData, setWeatherError } from "../redux/weatherSlice";
-import { formatWeatherData } from "../utils/getFormattedData";
+import { formatWeatherData } from "../utils/";
 
 const SearchDropdown = () => {
   const [searchQuery, setSearchQuery] = useState("");
