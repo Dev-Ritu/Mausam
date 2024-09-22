@@ -7,37 +7,43 @@ const SearchDropdown = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
   const dispatch = useDispatch();
 
-  const fetchWeatherData = useCallback(async (lat, lon) => {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=672f17559ff881ac8cee6c874242de28`
-      );
-      if (!response.ok) throw new Error("Network response was not ok");
 
-      const weatherData = await response.json();
-      const formattedData = formatWeatherData(weatherData);
+  // Function to fetch weather data based on lat/lon
+  const fetchWeatherData = useCallback(
+    async (lat, lon) => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=672f17559ff881ac8cee6c874242de28`
+        );
+        if (!response.ok) throw new Error("Network response was not ok");
 
-      dispatch(setWeatherData(formattedData));
-    } catch (error) {
-      dispatch(setWeatherError("Error fetching weather data"));
-    } finally {
-      setLoading(false);
-    }
-  }, [dispatch]); // add dispatch to dependencies
+        const weatherData = await response.json();
+        const formattedData = formatWeatherData(weatherData);
+        dispatch(setWeatherData(formattedData));
+      } catch (error) {
+        dispatch(setWeatherError("Error fetching weather data"));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [dispatch]
+  );
+
+  // Fetch data for default city (New York) on initial render
+  useEffect(() => {
+    fetchWeatherData(40.7128, -74.006);
+  }, [fetchWeatherData]);
 
   const debounceTimeout = useRef(null);
 
   const handleChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
-    setError("");
-
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
     }
@@ -49,12 +55,12 @@ const SearchDropdown = () => {
         setSearchResults([]);
         setDropdownOpen(false);
       }
-    }, 1000);
+    }, 300); // Reduced delay for a more interactive experience
   };
 
   const fetchCities = async (query) => {
+    setLoading(true);
     try {
-      setLoading(true);
       const response = await fetch(
         `http://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=672f17559ff881ac8cee6c874242de28`
       );
@@ -62,15 +68,13 @@ const SearchDropdown = () => {
 
       const data = await response.json();
       if (data.length === 0) {
-        setError("City not found");
         setDropdownOpen(false);
         return;
       }
 
       setSearchResults(data);
-      setDropdownOpen(true);
+      setDropdownOpen(true); // Automatically open the dropdown when results are available
     } catch (error) {
-      setError("Error fetching data. Please try again.");
       setDropdownOpen(false);
     } finally {
       setLoading(false);
@@ -79,13 +83,9 @@ const SearchDropdown = () => {
 
   const handleSelect = async (city) => {
     setSearchQuery(city.name);
-    setDropdownOpen(false);
+    setDropdownOpen(false); // Close dropdown after selection
     await fetchWeatherData(city.lat, city.lon);
   };
-
-  useEffect(() => {
-    fetchWeatherData(40.7127, -74.006); // Initial fetch
-  }, [fetchWeatherData]); // now using the memoized version
 
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -94,16 +94,11 @@ const SearchDropdown = () => {
   };
 
   useEffect(() => {
-    if (dropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [dropdownOpen]);
+  }, []);
 
   return (
     <div className="relative w-full">
@@ -113,7 +108,7 @@ const SearchDropdown = () => {
         value={searchQuery}
         onChange={handleChange}
         className="px-4 py-2 rounded-l-full text-black focus:outline-none w-[80%]"
-        onClick={() => searchQuery && setDropdownOpen(true)}
+        onClick={() => searchQuery && setDropdownOpen(true)} // Opens dropdown on click if there's input
       />
       <button
         className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded-r-full w-[20%]"
@@ -124,7 +119,7 @@ const SearchDropdown = () => {
       {dropdownOpen && (
         <div
           ref={dropdownRef}
-          className="absolute z-10 bg-white text-black rounded-lg shadow-lg mt-1 w-full min-h-40 border border-gray-300"
+          className="absolute z-10 bg-white text-black rounded-lg shadow-lg mt-1 w-full min-h-40 border border-gray-300 max-h-60 overflow-y-auto"
         >
           {loading ? (
             <div role="status" className="flex justify-center m-auto p-4">
@@ -151,26 +146,20 @@ const SearchDropdown = () => {
               No results found
             </div>
           ) : (
-            <div>
-              {error ? (
-                <div className="text-red-500">{error}</div>
-              ) : (
-                searchResults.map((result, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center hover:bg-gray-200 m-1 py-1 px-2 hover:text-white transition-colors duration-200 cursor-pointer rounded-lg"
-                    onClick={() => handleSelect(result)}
-                  >
-                    <i className="fas fa-map-marker-alt mr-2"></i>
-                    <div className="flex items-center hover:text-white text-xs sm:text-lg">
-                      <div className="font-semibold">
-                        {result.name}, {result.state}, {result.country}
-                      </div>
-                    </div>
+            searchResults.map((result, index) => (
+              <div
+                key={index}
+                className="flex items-center hover:bg-gray-200 m-1 py-1 px-2 hover:text-white transition-colors duration-200 cursor-pointer rounded-lg"
+                onClick={() => handleSelect(result)}
+              >
+                <i className="fas fa-map-marker-alt mr-2"></i>
+                <div className="flex items-center hover:text-white text-xs sm:text-lg">
+                  <div className="font-semibold">
+                    {result.name}, {result.state}, {result.country}
                   </div>
-                ))
-              )}
-            </div>
+                </div>
+              </div>
+            ))
           )}
         </div>
       )}
