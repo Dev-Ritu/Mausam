@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { setWeatherData, setWeatherError } from "../redux/weatherSlice";
 import { formatWeatherData } from "../utils/getFormattedData";
@@ -8,14 +8,13 @@ const SearchDropdown = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // New loading state
+  const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
-
   const dispatch = useDispatch();
 
-  const fetchWeatherData = async (lat, lon) => {
+  const fetchWeatherData = useCallback(async (lat, lon) => {
     try {
-      setLoading(true); // Set loading to true
+      setLoading(true);
       const response = await fetch(
         `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=672f17559ff881ac8cee6c874242de28`
       );
@@ -28,9 +27,9 @@ const SearchDropdown = () => {
     } catch (error) {
       dispatch(setWeatherError("Error fetching weather data"));
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
-  };
+  }, [dispatch]); // add dispatch to dependencies
 
   const debounceTimeout = useRef(null);
 
@@ -55,7 +54,7 @@ const SearchDropdown = () => {
 
   const fetchCities = async (query) => {
     try {
-      setLoading(true); // Set loading to true
+      setLoading(true);
       const response = await fetch(
         `http://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=672f17559ff881ac8cee6c874242de28`
       );
@@ -74,7 +73,7 @@ const SearchDropdown = () => {
       setError("Error fetching data. Please try again.");
       setDropdownOpen(false);
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
@@ -85,8 +84,9 @@ const SearchDropdown = () => {
   };
 
   useEffect(() => {
-    fetchWeatherData(40.7127, -74.006);
-  }, [fetchWeatherData]);
+    fetchWeatherData(40.7127, -74.006); // Initial fetch
+  }, [fetchWeatherData]); // now using the memoized version
+
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setDropdownOpen(false);
@@ -152,7 +152,6 @@ const SearchDropdown = () => {
             </div>
           ) : (
             <div>
-              {" "}
               {error ? (
                 <div className="text-red-500">{error}</div>
               ) : (
