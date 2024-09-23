@@ -18,7 +18,7 @@ const SearchDropdown = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=672f17559ff881ac8cee6c874242de28`
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${process.env.REACT_APP_WEATHER_API_KEY}`
         );
         if (!response.ok) throw new Error("Network response was not ok");
 
@@ -62,7 +62,7 @@ const SearchDropdown = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=672f17559ff881ac8cee6c874242de28`
+        `https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${process.env.REACT_APP_WEATHER_API_KEY}`
       );
       if (!response.ok) throw new Error("Network response was not ok");
 
